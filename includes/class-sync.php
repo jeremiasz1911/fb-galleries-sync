@@ -40,15 +40,19 @@ class FBGS_Sync {
 
   public function run_sync_selected(array $albumIds) {
     $token  = get_option('fbgs_page_token');
-    if (!$token) return;
+    $pageId = get_option('fbgs_page_id');
+    if (!$token || !$pageId) return;
 
     $client = new FBGS_FB_Client($token);
 
     foreach ($albumIds as $albumId) {
-      // minimum: upsert album po danych z listy albumów (albo dociągnij album szczegółowo)
-      // najprościej: pobierz wszystkie albumy, znajdź po ID i upsert
-      // (optymalizacja: dodać endpoint album detail)
-      $this->sync_album_photos($client, $albumId);
+      // minimalne utworzenie albumu jeśli go nie ma
+      $this->upsert_album([
+        'id' => $albumId,
+        'name' => 'Album ' . $albumId,
+      ]);
+
+      // zdjęcia dopniemy w kolejnym kroku
     }
   }
 
@@ -83,4 +87,5 @@ class FBGS_Sync {
     // albo do post meta (dla małych albumów).
     // Kluczowe: deduplikacja po fb_photo_id.
   }
+
 }
