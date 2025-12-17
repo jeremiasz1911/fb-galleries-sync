@@ -127,6 +127,104 @@
     // Expose close (optional)
     window.fbgsCloseLightbox = close;
   }
+jQuery(function ($) {
+  const $modal = $('#fbgs-modal');
+  const $list = $('#fbgs-list');
+  const $onlyNew = $('#fbgs-only-new');
+
+  function openModal() {
+    $modal.show();
+  }
+  function closeModal() {
+    $modal.hide();
+    $list.empty();
+  }
+
+  function render(albums) {
+    const onlyNew = $onlyNew.is(':checked');
+    const filtered = onlyNew ? albums.filter(a => !a.exists) : albums;
+
+    if (!filtered.length) {
+      $list.html('<p>Brak albumów do pokazania.</p>');
+      return;
+    }
+
+    const html = filtered.map(a => {
+      const badge = a.exists ? '✅ już jest' : '➕ nowy';
+      const disabled = a.exists ? 'disabled' : '';
+      const checked = a.exists ? '' : 'checked';
+      const meta = [
+        a.created_time ? a.created_time.substring(0,10) : '',
+        a.count != null ? (a.count + ' zdjęć') : ''
+      ].filter(Boolean).join(' • ');
+
+      return `
+        <label style="display:flex; gap:10px; align-items:flex-start; padding:8px 0; border-bottom:1px solid #eee;">
+          <input type="checkbox" class="fbgs-alb" value="${a.id}" ${checked} ${disabled}>
+          <div>
+            <div><strong>${escapeHtml(a.name)}</strong> <span style="opacity:.7">${badge}</span></div>
+            <div style="opacity:.7; font-size:12px;">${escapeHtml(meta)}</div>
+          </div>
+        </label>
+      `;
+    }).join('');
+
+    $list.html(html);
+  }
+
+  function escapeHtml(s) {
+    return String(s || '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
+  }
+
+  async function loadPreview() {
+    $list.html('<p>Ładowanie albumów z Facebooka…</p>');
+
+    const res = await $.post(FBGS_ADMIN.ajax_url, {
+      action: 'fbgs_preview_albums',
+      nonce: FBGS_ADMIN.nonce
+    });
+
+    if (!res || !res.success) {
+      $list.html('<p>Błąd: ' + escapeHtml(res?.data?.message || 'nieznany') + '</p>');
+      return;
+    }
+
+    const albums = res.data.albums || [];
+    $modal.data('albums', albums);
+    render(albums);
+  }
+
+  $('#fbgs-preview').on('click', function (e) {
+    e.preventDefault();
+    openModal();
+    loadPreview();
+  });
+
+  $('#fbgs-close, .fbgs-modal-backdrop').on('click', function (e) {
+    e.preventDefault();
+    closeModal();
+  });
+
+  $onlyNew.on('change', function () {
+    render($modal.data('albums') || []);
+  });
+
+  $('#fbgs-import-selected').on('click', function (e) {
+    e.preventDefault();
+
+    const ids = $('.fbgs-alb:checked').map(function () { return $(this).val(); }).get();
+
+    if (!ids.length) {
+      alert('Nie wybrano żadnych nowych albumów do importu.');
+      return;
+    }
+
+    const $inputs = $('#fbgs-selected-inputs').empty();
+    ids.forEach(id => $inputs.append(`<input type="hidden" name="fb_album_ids[]" value="${id}">`));
+
+    $('#fbgs-import-form')[0].submit();
+  });
+});
 
   // Init on DOM ready
   document.addEventListener('DOMContentLoaded', function () {

@@ -38,6 +38,20 @@ class FBGS_Sync {
     } while ($after);
   }
 
+  public function run_sync_selected(array $albumIds) {
+    $token  = get_option('fbgs_page_token');
+    if (!$token) return;
+
+    $client = new FBGS_FB_Client($token);
+
+    foreach ($albumIds as $albumId) {
+      // minimum: upsert album po danych z listy albumów (albo dociągnij album szczegółowo)
+      // najprościej: pobierz wszystkie albumy, znajdź po ID i upsert
+      // (optymalizacja: dodać endpoint album detail)
+      $this->sync_album_photos($client, $albumId);
+    }
+  }
+
   private function upsert_album(array $a) {
     $existing = $this->find_album_post_id($a['id']);
     $postId = $existing ?: wp_insert_post([
