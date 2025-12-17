@@ -1,0 +1,219 @@
+/* --- FBGS Gallery: grid + cards --- */
+.fbgs-wrap {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.fbgs-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: 14px;
+  align-items: stretch;
+}
+
+.fbgs-card,
+.fbgs-photo {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  border-radius: 14px;
+  overflow: hidden;
+  background: #fff;
+  border: 1px solid rgba(0,0,0,.08);
+  box-shadow: 0 6px 16px rgba(0,0,0,.06);
+  transform: translateZ(0);
+  transition: transform .18s ease, box-shadow .18s ease;
+}
+
+.fbgs-card:hover,
+.fbgs-photo:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 26px rgba(0,0,0,.10);
+}
+
+.fbgs-thumb {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  display: block;
+}
+
+.fbgs-card-body {
+  padding: 12px 12px 10px;
+}
+
+.fbgs-title {
+  font-weight: 700;
+  line-height: 1.2;
+  margin: 0 0 6px;
+  font-size: 15px;
+}
+
+.fbgs-meta {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  opacity: .75;
+  font-size: 12px;
+  line-height: 1.2;
+}
+
+.fbgs-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: rgba(0,0,0,.06);
+}
+
+/* --- Pagination --- */
+.fbgs-pagination {
+  margin-top: 18px;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.fbgs-pagination a,
+.fbgs-pagination span {
+  display: inline-flex;
+  min-width: 36px;
+  height: 36px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  padding: 0 10px;
+  border: 1px solid rgba(0,0,0,.10);
+  background: #fff;
+  text-decoration: none;
+  color: inherit;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.fbgs-pagination .is-active {
+  background: rgba(0,0,0,.08);
+}
+
+/* --- Lightbox overlay --- */
+.fbgs-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 999999;
+  display: none;
+}
+
+.fbgs-lightbox.is-open {
+  display: block;
+}
+
+.fbgs-lightbox-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,.72);
+}
+
+.fbgs-lightbox-dialog {
+  position: absolute;
+  inset: 24px;
+  display: grid;
+  grid-template-rows: 1fr auto;
+  align-items: center;
+  justify-items: center;
+  pointer-events: none;
+}
+
+.fbgs-lightbox-figure {
+  max-width: min(1100px, 100%);
+  max-height: 100%;
+  width: 100%;
+  pointer-events: auto;
+  display: grid;
+  grid-template-rows: 1fr auto;
+  gap: 10px;
+}
+
+.fbgs-lightbox-img-wrap {
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.14);
+  border-radius: 16px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+}
+
+.fbgs-lightbox-img {
+  max-width: 100%;
+  max-height: calc(100vh - 170px);
+  width: auto;
+  height: auto;
+  display: block;
+}
+
+.fbgs-lightbox-caption {
+  color: rgba(255,255,255,.92);
+  font-size: 14px;
+  line-height: 1.35;
+  text-align: center;
+  padding: 0 8px;
+  opacity: .95;
+}
+
+/* Buttons */
+.fbgs-lightbox-close,
+.fbgs-lightbox-prev,
+.fbgs-lightbox-next {
+  pointer-events: auto;
+  position: absolute;
+  top: 18px;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,.18);
+  background: rgba(0,0,0,.28);
+  color: #fff;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background .18s ease, transform .18s ease;
+}
+
+.fbgs-lightbox-close:hover,
+.fbgs-lightbox-prev:hover,
+.fbgs-lightbox-next:hover {
+  background: rgba(0,0,0,.40);
+  transform: translateY(-1px);
+}
+
+.fbgs-lightbox-close {
+  right: 18px;
+}
+
+.fbgs-lightbox-prev,
+.fbgs-lightbox-next {
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.fbgs-lightbox-prev {
+  left: 18px;
+}
+
+.fbgs-lightbox-next {
+  right: 18px;
+}
+
+.fbgs-lightbox-prev:hover,
+.fbgs-lightbox-next:hover {
+  transform: translateY(calc(-50% - 1px));
+}
+
+/* Mobile tweaks */
+@media (max-width: 640px) {
+  .fbgs-lightbox-dialog { inset: 12px; }
+  .fbgs-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+}
